@@ -1,0 +1,94 @@
+<!-- pipe videos -->
+<!-- <div class="container">
+  <div class="row">
+    <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+      <input type="text" [(ngModel)]="filterstring">
+      <button class="btn btn-primary" (click)="addserver()">Add Server</button>
+      <hr>
+      <ul class="list-group">
+        <li class="list-group-item" *ngFor="let server of servers | filter:filterstring:'status'" [ngClass]="getStatusClasses(server)">
+          <span class="badge">
+            {{ server.status  }}
+          </span>
+          <strong>{{ server.name | shorten:5}}</strong> |
+           {{ server.instanceType | uppercase }} |
+            {{ server.started | date:'fullDate'}}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div> -->
+
+<!-- //////////////////////////////////////http requset -->
+<!-- <div class="container">
+  <div class="row">
+    <div class="col-xs-12 col-md-6 col-md-offset-3">
+      <form #postForm="ngForm" (ngSubmit)="onCreatePost(postForm.value)">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" class="form-control" id="title" required ngModel name="title" />
+        </div>
+        <div class="form-group">
+          <label for="content">Content</label>
+          <textarea class="form-control" id="content" required ngModel name="content"></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit" [disabled]="!postForm.valid">
+          Send Post
+        </button>
+      </form>
+    </div>
+  </div>
+  <hr />
+  <div class="row">
+    <div class="col-xs-12 col-md-6 col-md-offset-3">
+      <button class="btn btn-primary" (click)="onFetchPosts()">
+        Fetch Posts
+      </button>
+      |
+      <button class="btn btn-danger" [disabled]="loadedPosts.length < 1" (click)="onClearPosts()">
+        Clear Posts
+      </button>
+    </div>
+  </div>
+  <div class="alert alert-danger" *ngIf="error">
+    <h2>an error occured!</h2>
+    <p>{{error}}</p>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-md-6 col-md-offset-3">
+      <p *ngIf="loadedPosts.length < 1 && !error"  >No posts available!</p>
+      <ul class="list-group" *ngIf="loadedPosts.length >= 1">
+        <li class="list-group-item" *ngFor="let post of loadedPosts">
+          <h3>{{post.title}}</h3>
+          <p>{{post.content}}</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div> -->
+
+
+<!-- ///////////////////// authentication -->
+<!-- <app-header (featureSelected)="onNavigate($event)"></app-header>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div> -->
+
+
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-9">
+      <router-outlet></router-outlet>
+    </div>
+    <div class="col-md-3">
+      <app-side-bar></app-side-bar>
+    </div>
+  </div>
+</div>
+<!-- <app-coach-composition></app-coach-composition> -->
+

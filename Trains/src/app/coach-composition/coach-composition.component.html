@@ -1,0 +1,81 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-9">
+      <form [formGroup]="coachCompositionForm" (ngSubmit)="onSubmit()">
+
+        <div class="mb-1">
+          <app-form-input
+            name="Coach Composition ID"
+            type="number"
+            inputFormName="coachCompositionId"
+            [formGroupInputGroup]="coachCompositionForm">
+          </app-form-input>
+        </div>
+        <p *ngIf="coachCompositionForm.controls['coachCompositionId'].touched &&
+         coachCompositionForm.controls['coachCompositionId'].invalid"> invalid Number</p>
+
+          <div class="mb-1">
+            <app-form-input
+              name = "Row Number"
+              type =  "number"
+              inputFormName = "rowNumber"
+              [formGroupInputGroup] = "coachCompositionForm"
+            ></app-form-input>
+          </div>
+          <p *ngIf="coachCompositionForm.controls['rowNumber'].touched && coachCompositionForm.controls['rowNumber'].invalid">
+            invalid Number</p>
+
+          <div class="mb-1">
+            <app-form-input
+              name = "Column Number"
+              type =  "number"
+              inputFormName = "columnsNumber"
+              [formGroupInputGroup]="coachCompositionForm"
+            ></app-form-input>
+          </div>
+          <p *ngIf="coachCompositionForm.controls['columnsNumber'].touched && coachCompositionForm.controls['columnsNumber'].invalid">
+            invalid Number</p>
+
+          <div class="mb-1">
+            <app-form-input
+            name ="First Row Seat Number"
+            type="number"
+            inputFormName="firstRowSeatCount"
+            [formGroupInputGroup]="coachCompositionForm"
+            ></app-form-input>
+          </div>
+          <p *ngIf="coachCompositionForm.controls['firstRowSeatCount'].touched && coachCompositionForm.controls['firstRowSeatCount'].invalid">
+            invalid Number</p>
+
+          <div class="mb-1">
+            <app-form-input
+            name="Last Row Seat Number"
+            type="number"
+            inputFormName="lastRowSeatCount"
+            [formGroupInputGroup]="coachCompositionForm"
+            ></app-form-input>
+          </div>
+          <p *ngIf="coachCompositionForm.controls['lastRowSeatCount'].touched && coachCompositionForm.controls['lastRowSeatCount'].invalid">
+            invalid Number</p>
+          <button type="submit" class="btn btn-primary" [disabled]="coachCompositionForm.invalid">{{updatemood ?'Update' : 'Add'}}</button>
+          <button type="button" class="btn btn-danger" *ngIf="updatemood" (click)="cancelUpdate()">Cancel</button>
+      </form>
+      <p *ngIf="coachCompositionForm.invalid && coachCompositionForm.touched">
+        you enterd inValid Value/s</p>
+      <br><br>
+
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+          <app-table-shared [headers]="tableHeaders"
+          [keys]="tableKeys"
+          [data] = "coaches"
+          [updateMood]="updatemood"
+          (updatedIndex)="updateCoachData($event)"
+          (deletedIndex)="deleteCoach($event)"
+          ></app-table-shared>
+      </div>
+
+    </div>
+  </div>
+</div>

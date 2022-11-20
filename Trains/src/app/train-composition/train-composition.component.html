@@ -1,0 +1,44 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+        <form [formGroup]="trainCompositionForm" (ngSubmit)="onSubmit()">
+          <div class="mb-1 w-100">
+            <app-form-input name="Train Composition Id :" type="number" inputFormName="trainCopmpsitionID"
+              [formGroupInputGroup]="trainCompositionForm"></app-form-input>
+          </div>
+          <div class="mb-2 w-100">
+            <app-form-input name="Coach Count :" type="number" inputFormName="couchCount"
+              [formGroupInputGroup]="trainCompositionForm"></app-form-input>
+          </div>
+          <div formArrayName="coachesCopmosition">
+            <div class="form-group" *ngFor="let coach of  coachesCopmosition.controls ;let i = index">
+              <app-select-shared
+              [LabelName] = "getLabelName(i)"
+              [formGroupInput] = "trainCompositionForm"
+              [formcontolInputName] = "i"
+              [selections] = "trainSelectObject"
+              [inFormArray] = "true"
+              formArraySelectName = "coachesCopmosition"
+              >
+              </app-select-shared>
+            </div>
+          </div>
+          <div class="w-75 mx-auto">
+            <button  type="submit" class="btn btn-primary w-100" [disabled]="trainCompositionForm.invalid">{{updateMood ?
+              'update' :
+              'Add'}}</button>
+            <button class="btn btn-danger mt-1" *ngIf="updateMood" (click)="cancelUpdate()">Cancel</button>
+          </div>
+
+        </form>
+    </div>
+  </div>
+  <br>
+      <div class="row">
+        <div class="col-md-12">
+          <app-table-shared [headers]="tableHeaders" [data]="trainsComposition" [keys]="tableKeys" [updateMood]="updateMood"
+            (updatedIndex)="updateTrainComposition($event)" (deletedIndex)="deleteTrainComposition($event)"></app-table-shared>
+        </div>
+
+      </div>
+</div>

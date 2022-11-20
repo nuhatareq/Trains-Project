@@ -1,0 +1,54 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+      <form [formGroup]="trainInfo" (ngSubmit)="onSubmite()">
+        <div class="row">
+          <div class="col-xs-6 col-xs-6">
+            <div class="form-group">
+              <app-form-input name="Train Number :" type="number" inputFormName="trainNumber"
+                [formGroupInputGroup]="trainInfo"></app-form-input>
+              <p *ngIf="trainNumber.invalid && trainInfo.controls['trainNumber'].touched">
+                required and please enter positive numbers only</p>
+            </div>
+            <div class="form-group">
+              <app-select-shared LabelName="Train type :" formcontolInputName="trainType" [formGroupInput]="trainInfo"
+                [selections]="trainSelectObject"></app-select-shared>
+              <p *ngIf="trainInfo.controls['trainType'].invalid && trainInfo.controls['trainType'].touched">
+                required and please enter valid type</p>
+            </div>
+            <div class="form-group">
+              <app-select-shared LabelName="Composition Number :" formcontolInputName="compositionNumber"
+                [formGroupInput]="trainInfo" [selections]="trainCompositionSelectObject"></app-select-shared>
+              <p *ngIf="trainInfo.controls['compositionNumber'].invalid && trainInfo.controls['compositionNumber'].touched">
+                required and please enter valid number</p>
+            </div>
+            <div class="form-group">
+              <app-form-input name="Start Date :" type="date" inputFormName="startDate" [formGroupInputGroup]="trainInfo">
+              </app-form-input>
+              <p *ngIf="trainInfo.controls['startDate'].invalid && trainInfo.controls['startDate'].touched">
+                required and please enter valid Date</p>
+            </div>
+            <div class="form-group">
+              <app-form-input name="End Date :" type="date" inputFormName="endDate" [formGroupInputGroup]="trainInfo">
+              </app-form-input>
+              <p *ngIf="trainInfo.controls['endDate'].invalid && trainInfo.controls['endDate'].touched">
+                required and please enter valid Date</p>
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="trainInfo.invalid">{{updatemood ? 'Update' :
+              'Add'}}</button>
+            <button type="button" class="btn btn-danger" *ngIf="updatemood" (click)="cancelUpdate()">Cancel</button>
+
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+      <br>
+  <div class="row">
+    <div class="col-md-12">
+      <app-table-shared [headers]="tableHeaders" [data]="trains" [keys]="trainkeys" [updateMood]="updatemood"
+            (deletedIndex)="deleteTrain($event)" (updatedIndex)="updateTrainData($event)"></app-table-shared>
+    </div>
+  </div>
+
+</div>

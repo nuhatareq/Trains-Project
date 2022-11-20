@@ -1,0 +1,22 @@
+
+<ng-container *ngIf="!inFormArray">
+  <form [formGroup]="formGroupInput">
+    <label [for]="LabelName">{{LabelName}}</label>
+    <select [name]="LabelName" [formControlName]="formcontolInputName" class="form-select"
+      aria-label="Disabled select example">
+      <option *ngFor="let select of selections" [value]="select.value.toString()">{{select.name.toString()}}</option>
+    </select>
+  </form>
+</ng-container>
+<ng-container *ngIf="inFormArray">
+  <form [formGroup]="formGroupInput">
+    <div [formArrayName] = "formArraySelectName">
+      <label [for]="LabelName">{{LabelName}}</label>
+      <select [name]="LabelName" [formControlName]="formcontolInputName" class="form-select"
+        aria-label="Disabled select example">
+        <option *ngFor="let select of selections" [value]="select.value">{{select.name}}</option>
+      </select>
+    </div>
+  </form>
+</ng-container>
+

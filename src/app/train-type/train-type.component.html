@@ -1,15 +1,16 @@
 <div class="container">
   <div class="row">
     <form [formGroup]="trainType" (ngSubmit)="onSubmit()">
-      <div class="form-group col-lg-6">
+      <!-- شيلته عشان الapi هى اللى هتعمله -->
+      <!-- <div class="form-group col-lg-6">
         <app-form-input
         name="Train Type ID"
         type="number"
         inputFormName="trainTypeId"
         [formGroupInputGroup]="trainType"
         ></app-form-input>
-      </div>
-      <p *ngIf="trainType.controls['trainTypeId'].invalid && trainType.controls['trainTypeId'].touched">enter train ID</p>
+      </div> -->
+      <!-- <p *ngIf="trainType.controls['trainTypeId'].invalid && trainType.controls['trainTypeId'].touched">enter train ID</p> -->
       <br>
       <div class="form-group col-lg-6">
         <app-form-input

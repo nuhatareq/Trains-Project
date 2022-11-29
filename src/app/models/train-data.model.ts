@@ -8,5 +8,11 @@ export class TrainInfo {
   ) {}
 }
 export class TrainType {
-  constructor(public trainTypeName: string, public trainTypeId) {}
+  constructor(public trainTypeName: string, public trainTypeId?: number) {}
+
+  onCreate() {
+    return {
+      train_type_name: this.trainTypeName,
+    };
+  }
 }

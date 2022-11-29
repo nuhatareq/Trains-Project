@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { lastValueFrom } from 'rxjs';
 import { TrainType } from '../models/train-data.model';
 import { ToasterService } from '../services/toastr.service';
 import { TrainTypeService } from '../services/train-type.service';
@@ -21,11 +22,24 @@ export class TrainTypeComponent implements OnInit {
     private traintypeSRV: TrainTypeService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.forminit();
-    this.trainsTypes = this.traintypeSRV.getAlltrainsTypes();
+    // await lastValueFrom(this.traintypeSRV.getDataFromServer()).then(
+    //   (data: any) => {
+    //     console.log(data);
+    //     data.forEach((element) => {
+    //       this.trainsTypes.push(
+    //         new TrainType(element.train_type_name, element.id)
+    //       );
+    //     });
+    //   }
+    // );
+    this.trainsTypes = await lastValueFrom(
+      this.traintypeSRV.getDataFromServer()
+    );
+    // this.trainsTypes = this.traintypeSRV.getAlltrainsTypes();
   }
-  onSubmit() {
+  async onSubmit() {
     if (this.trainType.valid) {
       if (this.updateMood) {
         this.traintypeSRV.updateTrainType(
@@ -42,7 +56,11 @@ export class TrainTypeComponent implements OnInit {
         if (typeFound) {
           this.touster.showFailure('this train type is already available');
         } else {
-          this.traintypeSRV.addTrainType(this.trainType.value);
+          // this.traintypeSRV.addTrainType(this.trainType.value);
+          this.traintypeSRV.setDataToServer(this.trainTypeName.value);
+          this.trainsTypes = await lastValueFrom(
+            this.traintypeSRV.getDataFromServer()
+          );
           this.touster.showSuccess('you added train type successfully');
         }
         this.trainsTypes = this.traintypeSRV.getAlltrainsTypes();
@@ -61,7 +79,7 @@ export class TrainTypeComponent implements OnInit {
   forminit() {
     this.trainType = new FormGroup({
       trainTypeName: new FormControl(null, [Validators.required]),
-      trainTypeId: new FormControl(null, [Validators.required]),
+      // trainTypeId: new FormControl(null, [Validators.required]),
     });
   }
   updateTrainType(index: number) {

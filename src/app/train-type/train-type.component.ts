@@ -15,6 +15,7 @@ export class TrainTypeComponent implements OnInit {
   trainsTypes: TrainType[] = [];
   updatingTrainType: number;
   updateMood = false;
+  updateTrainTypes: TrainType;
   tableHeaders: string[] = ['Train Type ID', 'Train Type Name'];
   tableKeys: string[] = ['trainTypeId', 'trainTypeName'];
   constructor(
@@ -42,11 +43,16 @@ export class TrainTypeComponent implements OnInit {
   async onSubmit() {
     if (this.trainType.valid) {
       if (this.updateMood) {
-        this.traintypeSRV.updateTrainType(
-          this.updatingTrainType,
-          this.trainType.value
-        );
-        this.trainsTypes = this.traintypeSRV.getAlltrainsTypes();
+        // this.traintypeSRV.updateTrainType(
+        //   this.updatingTrainType,
+        //   this.trainTypeName.value
+        // );
+        this.updateTrainTypes.trainTypeName = this.trainTypeName.value;
+        this.traintypeSRV.updateDataInServer(this.updateTrainTypes);
+        // this.trainsTypes = this.traintypeSRV.getAlltrainsTypes();
+        // this.trainsTypes = await lastValueFrom(
+        //   this.traintypeSRV.getDataFromServer()
+        // );
         this.touster.showSuccess('Updated Successfully');
       } else {
         let typeFound = this.traintypeSRV.findtrainType(
@@ -84,18 +90,22 @@ export class TrainTypeComponent implements OnInit {
   }
   updateTrainType(index: number) {
     this.updatingTrainType = index;
+    this.updateTrainTypes = this.trainsTypes[this.updatingTrainType];
     this.trainType.patchValue({
       trainTypeName: this.trainsTypes[this.updatingTrainType].trainTypeName,
-      trainTypeId: this.trainsTypes[this.updatingTrainType].trainTypeId,
+      // trainTypeId: this.trainsTypes[this.updatingTrainType].trainTypeId,
     });
     this.updateMood = true;
   }
   deleteTrainType(index: number) {
     if (confirm('Are You Sure !!!')) {
+      this.traintypeSRV.deleteDataFromServer(
+        this.trainsTypes[index].trainTypeId
+      );
       this.traintypeSRV.deleteTrainType(index);
       this.trainsTypes = this.traintypeSRV.getAlltrainsTypes();
+      this.touster.showSuccess('deleted successfully');
     }
-    this.touster.showSuccess('deleted successfully');
   }
   cancelUpdate() {
     this.updateMood = false;

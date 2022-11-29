@@ -34,9 +34,21 @@ export class TrainTypeService {
         'http://10.1.23.63:9999/train/train_type/',
         new TrainType(trainData).onCreate()
       )
-      .subscribe((responseData) => {
-        console.log(responseData);
-      });
+      .subscribe(() => {});
+  }
+
+  updateDataInServer(newTrainType: TrainType) {
+    this.http
+      .put(`http://10.1.23.63:9999/train/train_type/`, {
+        id: newTrainType.trainTypeId,
+        train_type_name: newTrainType.trainTypeName,
+      })
+      .subscribe(() => {});
+  }
+  deleteDataFromServer(id: number) {
+    this.http
+      .delete(`http://10.1.23.63:9999/train/train_type/`, { body: { id: id } })
+      .subscribe(() => {});
   }
   getAlltrainsTypes() {
     return this.trainsTypes.slice();
@@ -66,7 +78,7 @@ export class TrainTypeService {
   getlength() {
     return this.trainsTypes.length;
   }
-  updateTrainType(index: number, traintype: TrainType) {
-    this.trainsTypes[index] = traintype;
+  updateTrainType(index: number, traintype: string) {
+    this.trainsTypes[index].trainTypeName = traintype;
   }
 }

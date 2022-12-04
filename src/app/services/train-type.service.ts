@@ -53,19 +53,15 @@ export class TrainTypeService {
   getAlltrainsTypes() {
     return this.trainsTypes.slice();
   }
-  addTrainType(newTrainType) {
-    this.trainsTypes.push(newTrainType);
-  }
+  // addTrainType(newTrainType) {
+  //   this.trainsTypes.push(newTrainType);
+  // }
   deleteTrainType(index: number) {
     this.trainsTypes.splice(index, 1);
   }
   findtrainType(traintypename: FormControl, traintypeid: FormControl) {
     let founded = this.trainsTypes.find((train: TrainType) => {
-      return (
-        traintypename.value === train.trainTypeName
-        // ||
-        // traintypeid.value === train.trainTypeId
-      );
+      return traintypename.value === train.trainTypeName;
     });
     return founded;
   }
@@ -74,11 +70,10 @@ export class TrainTypeService {
       return train.trainTypeId === trainTypeId;
     }).trainTypeName;
   }
-
-  getlength() {
-    return this.trainsTypes.length;
-  }
-  updateTrainType(index: number, traintype: string) {
-    this.trainsTypes[index].trainTypeName = traintype;
-  }
+  // getlength() {
+  //   return this.trainsTypes.length;
+  // }
+  // updateTrainType(index: number, traintype: string) {
+  //   this.trainsTypes[index].trainTypeName = traintype;
+  // }
 }

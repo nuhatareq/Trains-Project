@@ -41,7 +41,7 @@ export class CoachCompositionComponent implements OnInit {
   async ngOnInit() {
     this.formInit();
     this.coaches = await lastValueFrom(this.coachSrv.getDataFromServer());
-    this.coaches = this.coachSrv.getAllCoaches();
+    // this.coaches = this.coachSrv.getAllCoaches();
     this.coachCompositionForm
       .get('rowNumber')
       .valueChanges.subscribe((rowNumbers: number) => {

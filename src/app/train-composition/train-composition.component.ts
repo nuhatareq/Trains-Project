@@ -6,6 +6,7 @@ import { ToasterService } from './../services/toastr.service';
 import { CoachService } from './../services/coach.service';
 import { Coach } from '../models/coach.model';
 import { ObjectSelect } from '../sharedComponents/object-select-shared.model';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-train-composition',
@@ -19,24 +20,42 @@ export class TrainCompositionComponent implements OnInit {
   tableKeys: string[] = ['trainCompositionId', 'coachCount'];
   updateMood: boolean = false;
   updateTrainId: number;
+  updatedTrainComposition: TrainComposition;
+  oldCoachCount: number;
   coaches: Coach[] = [];
+  selectedTrainCoaches: any[] = [];
+  selcetedTRainCoachesIDS: number[] = [];
   trainSelectObject: ObjectSelect[] = [];
+  seatCountChaangingOrNot: number;
+  seatCountChaanging: number;
   constructor(
     private trainCompositionSRV: TrainCompositionService,
     private touster: ToasterService,
     private coachsrv: CoachService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.formInit();
-    this.coaches = this.coachsrv.getAllCoaches();
-    this.trainsComposition =
-      this.trainCompositionSRV.getAllTrainsCompositions();
+    this.trainCompositionSRV.coachesOfSelectedTrainCompoisition.subscribe(
+      (data: any) => {
+        this.selectedTrainCoaches = data;
+      }
+    );
+    this.trainCompositionSRV.coachTrainId.subscribe((data: any) => {
+      this.selcetedTRainCoachesIDS = data;
+    });
+    this.coaches = await lastValueFrom(this.coachsrv.getDataFromServer());
+    this.trainsComposition = await lastValueFrom(
+      this.trainCompositionSRV.getTrainCompositionID_and_CoachCount(
+        this.coaches
+      )
+    );
 
     this.trainCompositionForm
       .get('couchCount')
       .valueChanges.subscribe((counts: number) => {
         this.coachesCopmosition.clear();
+        this.seatCountChaanging = counts;
         for (let i = 0; i < counts; i++) {
           this.coachesCopmosition.push(
             new FormControl(null, [Validators.required])
@@ -62,7 +81,6 @@ export class TrainCompositionComponent implements OnInit {
         if (founded) {
           this.touster.showFailure('this train composition already exist');
         } else {
-          console.log(this.trainCompositionForm.value);
           this.OnAddMood();
         }
       }
@@ -73,7 +91,7 @@ export class TrainCompositionComponent implements OnInit {
 
   formInit() {
     this.trainCompositionForm = new FormGroup({
-      trainCopmpsitionID: new FormControl(null, [Validators.required]),
+      trainCopmpsitionID: new FormControl(null),
       couchCount: new FormControl(null, [Validators.required]),
       coachesCopmosition: new FormArray([]),
     });
@@ -91,16 +109,30 @@ export class TrainCompositionComponent implements OnInit {
       'coachesCopmosition'
     ] as FormArray;
   }
-  updateTrainComposition(index: number) {
+  async updateTrainComposition(index: number) {
     this.updateTrainId = index;
+    this.updatedTrainComposition = this.trainsComposition[index];
+    await this.trainCompositionSRV.getCoachOnTrain(
+      this.updatedTrainComposition.trainCompositionId
+    );
+    this.seatCountChaangingOrNot = this.trainsComposition[index].coachCount;
     this.trainCompositionForm.patchValue({
-      trainCopmpsitionID: this.trainsComposition[index].trainCompositionId,
+      // trainCopmpsitionID: this.trainsComposition[index].trainCompositionId,
       couchCount: this.trainsComposition[index].coachCount,
     });
+    this.oldCoachCount = this.trainsComposition[index].coachCount;
+    this.coachesCopmosition.clear();
+    for (let id of this.selectedTrainCoaches) {
+      this.coachesCopmosition.push(new FormControl(id, [Validators.required]));
+    }
+
     this.updateMood = true;
   }
   deleteTrainComposition(index: number) {
     if (confirm('Are You Sure !!')) {
+      this.trainCompositionSRV.deleteDataFromServer(
+        this.trainsComposition[index].trainCompositionId
+      );
       this.trainCompositionSRV.deleteTrainComposition(index);
       this.trainsComposition =
         this.trainCompositionSRV.getAllTrainsCompositions();
@@ -116,17 +148,21 @@ export class TrainCompositionComponent implements OnInit {
     this.trainCompositionForm.reset();
   }
   OnUpdateMood() {
-    this.trainCompositionSRV.updateTrainComposition(
-      this.updateTrainId,
-      this.trainCompositionId.value,
+    this.trainCompositionSRV.updateDataFormServer(
+      this.updatedTrainComposition.trainCompositionId,
       this.coachCount.value,
-      this.coachesCopmosition.value
+      this.coachesCopmosition.value,
+      this.selcetedTRainCoachesIDS,
+      this.oldCoachCount
     );
-    this.trainsComposition =
-      this.trainCompositionSRV.getAllTrainsCompositions();
+    // this.trainsComposition = await lastValueFrom(
+    this.trainCompositionSRV.getTrainCompositionID_and_CoachCount(this.coaches);
+    // );
+    // this.trainsComposition =
+    //   this.trainCompositionSRV.getAllTrainsCompositions();
     this.touster.showSuccess('updated Successfully!');
   }
-  OnAddMood() {
+  async OnAddMood() {
     let addedTrain = new TrainComposition(
       this.trainCompositionId.value,
       this.coachCount.value,
@@ -136,8 +172,13 @@ export class TrainCompositionComponent implements OnInit {
       addedTrain.coachesTypes.push(this.coachsrv.findById(control.value));
     }
     this.trainCompositionSRV.addTrainComposition(addedTrain);
-    this.trainsComposition =
-      this.trainCompositionSRV.getAllTrainsCompositions();
+    this.trainsComposition = await lastValueFrom(
+      this.trainCompositionSRV.getTrainCompositionID_and_CoachCount(
+        this.coaches
+      )
+    );
+    // this.trainsComposition =
+    //   this.trainCompositionSRV.getAllTrainsCompositions();
     this.touster.showSuccess('added successfully');
   }
 }

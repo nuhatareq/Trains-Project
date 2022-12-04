@@ -25,34 +25,17 @@ export class TrainTypeComponent implements OnInit {
 
   async ngOnInit() {
     this.forminit();
-    // await lastValueFrom(this.traintypeSRV.getDataFromServer()).then(
-    //   (data: any) => {
-    //     console.log(data);
-    //     data.forEach((element) => {
-    //       this.trainsTypes.push(
-    //         new TrainType(element.train_type_name, element.id)
-    //       );
-    //     });
-    //   }
-    // );
+
     this.trainsTypes = await lastValueFrom(
       this.traintypeSRV.getDataFromServer()
     );
-    // this.trainsTypes = this.traintypeSRV.getAlltrainsTypes();
   }
   async onSubmit() {
     if (this.trainType.valid) {
       if (this.updateMood) {
-        // this.traintypeSRV.updateTrainType(
-        //   this.updatingTrainType,
-        //   this.trainTypeName.value
-        // );
         this.updateTrainTypes.trainTypeName = this.trainTypeName.value;
         this.traintypeSRV.updateDataInServer(this.updateTrainTypes);
-        // this.trainsTypes = this.traintypeSRV.getAlltrainsTypes();
-        // this.trainsTypes = await lastValueFrom(
-        //   this.traintypeSRV.getDataFromServer()
-        // );
+
         this.touster.showSuccess('Updated Successfully');
       } else {
         let typeFound = this.traintypeSRV.findtrainType(
@@ -62,7 +45,6 @@ export class TrainTypeComponent implements OnInit {
         if (typeFound) {
           this.touster.showFailure('this train type is already available');
         } else {
-          // this.traintypeSRV.addTrainType(this.trainType.value);
           this.traintypeSRV.setDataToServer(this.trainTypeName.value);
           this.trainsTypes = await lastValueFrom(
             this.traintypeSRV.getDataFromServer()

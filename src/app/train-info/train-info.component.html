@@ -4,12 +4,12 @@
       <form [formGroup]="trainInfo" (ngSubmit)="onSubmite()">
         <div class="row">
           <div class="col-xs-6 col-xs-6">
-            <div class="form-group">
+            <!-- <div class="form-group">
               <app-form-input name="Train Number :" type="number" inputFormName="trainNumber"
                 [formGroupInputGroup]="trainInfo"></app-form-input>
               <p *ngIf="trainNumber.invalid && trainInfo.controls['trainNumber'].touched">
                 required and please enter positive numbers only</p>
-            </div>
+            </div> -->
             <div class="form-group">
               <app-select-shared LabelName="Train type :" formcontolInputName="trainType" [formGroupInput]="trainInfo"
                 [selections]="trainSelectObject"></app-select-shared>

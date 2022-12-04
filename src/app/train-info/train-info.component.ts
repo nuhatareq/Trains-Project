@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { Validatorsboo } from '../shared/custom-validator';
 import { TrainInfo, TrainType } from '../models/train-data.model';
 import { ToasterService } from '../services/toastr.service';
 import { TrainTypeService } from '../services/train-type.service';
-import { TrainInfoService } from '../services/train.service';
+import { TrainInfoService } from '../services/trainInfo.service';
 import { ObjectSelect } from './../sharedComponents/object-select-shared.model';
 import { TrainComposition } from '../models/train-composition.model';
 import { TrainCompositionService } from './../services/train-composition.service';
@@ -22,6 +22,7 @@ export class TrainInfoComponent implements OnInit {
   trainsComposition: TrainComposition[] = [];
   updatemood = false;
   updatedtrainIndex: number;
+  updatedTrainInfo: TrainInfo;
   tableHeaders: string[] = [
     'Train Number',
     'Train Type',
@@ -47,14 +48,13 @@ export class TrainInfoComponent implements OnInit {
     private traininfosrv: TrainInfoService,
     private TrainCompositionsrv: TrainCompositionService
   ) {}
-  ngOnInit() {
+  async ngOnInit() {
     this.initForm();
-    this.trains = this.traininfosrv.getAllTrains();
     this.trainTypes = this.trainTypesSRV.getAlltrainsTypes();
     this.trainsComposition =
       this.TrainCompositionsrv.getAllTrainsCompositions();
+    this.trains = await lastValueFrom(this.traininfosrv.getDataFromServer());
 
-    console.log(this.trainsComposition);
     this.trainSelectObject = this.trainTypes.map((item) => {
       return new ObjectSelect(item.trainTypeName, item.trainTypeId);
     });
@@ -66,18 +66,20 @@ export class TrainInfoComponent implements OnInit {
         );
       }
     );
-    console.log(this.trainCompositionSelectObject);
   }
 
   // form submmition
-  onSubmite() {
+  async onSubmite() {
     const control = this.trainStartDate;
     const control2 = this.trainEndDate;
     if (this.updatemood) {
-      this.traininfosrv.updateTrain(
-        this.updatedtrainIndex,
-        this.trainInfo.value
-      );
+      this.updatedTrainInfo.trainType = this.trainType.value;
+      this.updatedTrainInfo.compositionNumber =
+        this.traincompositionNumber.value;
+      this.updatedTrainInfo.startDate = this.trainStartDate.value;
+      this.updatedTrainInfo.endDate = this.trainEndDate.value;
+      this.traininfosrv.updateDataToServer(this.updatedTrainInfo);
+
       this.toastr.showSuccess('Update Succeefully');
     } else {
       let founded_train = this.trains.find((train) => {
@@ -88,7 +90,10 @@ export class TrainInfoComponent implements OnInit {
       if (founded_train) {
         this.toastr.showFailure('you entered date not available');
       } else {
-        this.traininfosrv.addTrainInfo(this.trainInfo.value);
+        this.traininfosrv.setDataToServer(this.trainInfo.value);
+        this.trains = await lastValueFrom(
+          this.traininfosrv.getDataFromServer()
+        );
         this.toastr.showSuccess('you success  adding a new train iformation');
       }
     }
@@ -97,21 +102,23 @@ export class TrainInfoComponent implements OnInit {
     this.trainInfo.reset();
   }
 
-  // getter for from controls of train form
-  get trainNumber() {
-    return this.trainInfo.controls['trainNumber'] as FormControl;
-  }
   get trainStartDate() {
     return this.trainInfo.controls['startDate'] as FormControl;
   }
   get trainEndDate() {
     return this.trainInfo.controls['endDate'] as FormControl;
   }
-
+  get trainType() {
+    return this.trainInfo.controls['trainType'] as FormControl;
+  }
+  get traincompositionNumber() {
+    return this.trainInfo.controls['compositionNumber'] as FormControl;
+  }
   updateTrainData(index: number) {
     this.updatedtrainIndex = index;
+    this.updatedTrainInfo = this.trains[index];
     this.trainInfo.patchValue({
-      trainNumber: this.trains[index].trainNumber,
+      // trainNumber: this.trains[index].trainNumber,
       trainType: this.trains[index].trainType,
       compositionNumber: this.trains[index].compositionNumber,
       startDate: this.trains[index].startDate,
@@ -124,19 +131,20 @@ export class TrainInfoComponent implements OnInit {
     this.updatemood = false;
     this.trainInfo.reset();
   }
-  deleteTrain(index: number) {
+  async deleteTrain(index: number) {
     if (confirm('are you sure that you want to delete this data ?')) {
-      this.trains.splice(index, 1);
+      this.traininfosrv.deleteDataFromServer(this.trains[index].trainNumber);
+      this.trains = await lastValueFrom(this.traininfosrv.getDataFromServer());
       this.toastr.showSuccess('you succeeded to delete this train');
     }
   }
 
   initForm() {
     this.trainInfo = new FormGroup({
-      trainNumber: new FormControl(null, [
-        Validators.required,
-        Validators.pattern('^[1-9]+[0-9]*$'),
-      ]),
+      // trainNumber: new FormControl(null, [
+      //   Validators.required,
+      //   Validators.pattern('^[1-9]+[0-9]*$'),
+      // ]),
       trainType: new FormControl(null, [Validators.required]),
       compositionNumber: new FormControl(null, [Validators.required]),
       startDate: new FormControl(null, [

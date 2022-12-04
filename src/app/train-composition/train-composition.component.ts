@@ -6,7 +6,7 @@ import { ToasterService } from './../services/toastr.service';
 import { CoachService } from './../services/coach.service';
 import { Coach } from '../models/coach.model';
 import { ObjectSelect } from '../sharedComponents/object-select-shared.model';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-train-composition',
@@ -180,5 +180,14 @@ export class TrainCompositionComponent implements OnInit {
     // this.trainsComposition =
     //   this.trainCompositionSRV.getAllTrainsCompositions();
     this.touster.showSuccess('added successfully');
+  }
+  canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
+    if (this.updateMood) {
+      return confirm(
+        'do you really want to leave this page before updating your data ?'
+      );
+    } else {
+      return true;
+    }
   }
 }

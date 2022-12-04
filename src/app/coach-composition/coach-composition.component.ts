@@ -3,7 +3,7 @@ import { Coach } from '../models/coach.model';
 import { FormGroup, FormControl, Validators, Form } from '@angular/forms';
 import { CoachService } from '../services/coach.service';
 import { ToasterService } from '../services/toastr.service';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 @Component({
   selector: 'app-coach-composition',
   templateUrl: './coach-composition.component.html',
@@ -176,5 +176,14 @@ export class CoachCompositionComponent implements OnInit {
   cancelUpdate() {
     this.updatemood = false;
     this.coachCompositionForm.reset();
+  }
+  canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
+    if (this.updatemood) {
+      return confirm(
+        'do you really want to leave this page before updating your data ?'
+      );
+    } else {
+      return true;
+    }
   }
 }

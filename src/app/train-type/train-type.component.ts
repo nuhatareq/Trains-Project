@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { TrainType } from '../models/train-data.model';
 import { ToasterService } from '../services/toastr.service';
 import { TrainTypeService } from '../services/train-type.service';
@@ -92,5 +92,14 @@ export class TrainTypeComponent implements OnInit {
   cancelUpdate() {
     this.updateMood = false;
     this.trainType.reset();
+  }
+  canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
+    if (this.updateMood) {
+      return confirm(
+        'do you really want to leave this page before updating your data ?'
+      );
+    } else {
+      return true;
+    }
   }
 }

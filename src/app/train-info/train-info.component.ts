@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { Validatorsboo } from '../shared/custom-validator';
 import { TrainInfo, TrainType } from '../models/train-data.model';
 import { ToasterService } from '../services/toastr.service';
@@ -9,13 +9,14 @@ import { TrainInfoService } from '../services/trainInfo.service';
 import { ObjectSelect } from './../sharedComponents/object-select-shared.model';
 import { TrainComposition } from '../models/train-composition.model';
 import { TrainCompositionService } from './../services/train-composition.service';
+import { CanComponentDeactivate } from './../services/auth-candeactivateroute.service';
 
 @Component({
   selector: 'app-train-info',
   templateUrl: './train-info.component.html',
   styleUrls: ['./train-info.component.css'],
 })
-export class TrainInfoComponent implements OnInit {
+export class TrainInfoComponent implements OnInit, CanComponentDeactivate {
   trainInfo: FormGroup;
   trains: TrainInfo[] = [];
   trainTypes: TrainType[] = [];
@@ -78,7 +79,8 @@ export class TrainInfoComponent implements OnInit {
         this.traincompositionNumber.value;
       this.updatedTrainInfo.startDate = this.trainStartDate.value;
       this.updatedTrainInfo.endDate = this.trainEndDate.value;
-      this.traininfosrv.updateDataToServer(this.updatedTrainInfo);
+      await this.traininfosrv.updateDataToServer(this.updatedTrainInfo);
+      // this.trains = await lastValueFrom(this.traininfosrv.getDataFromServer());
 
       this.toastr.showSuccess('Update Succeefully');
     } else {
@@ -91,13 +93,13 @@ export class TrainInfoComponent implements OnInit {
         this.toastr.showFailure('you entered date not available');
       } else {
         this.traininfosrv.setDataToServer(this.trainInfo.value);
-        this.trains = await lastValueFrom(
-          this.traininfosrv.getDataFromServer()
-        );
+        // this.trains = await lastValueFrom(
+        //   this.traininfosrv.getDataFromServer()
+        // );
         this.toastr.showSuccess('you success  adding a new train iformation');
       }
     }
-    this.trains = this.traininfosrv.getAllTrains();
+    this.trains = await lastValueFrom(this.traininfosrv.getDataFromServer());
     this.updatemood = false;
     this.trainInfo.reset();
   }
@@ -156,5 +158,14 @@ export class TrainInfoComponent implements OnInit {
         Validatorsboo.checkDateGreaterThanToday,
       ]),
     });
+  }
+  canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
+    if (this.updatemood) {
+      return confirm(
+        'do you really want to leave this page before updating your data ?'
+      );
+    } else {
+      return true;
+    }
   }
 }
